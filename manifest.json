@@ -8,15 +8,15 @@
   "theme_color": "#3d2c1e",
 "icons": [
   {
-    "src": "/abaz.png",
+    "src": "abaz.png",
     "sizes": "192x192",
     "type": "image/png"
   },
   {
-    "src": "/abaz.png",
+    "src": "abaz.png",
     "sizes": "512x512",
     "type": "image/png"
   }
 ]
-  ]
+  
 }
