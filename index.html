@@ -1,668 +1,287 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Абазинско-русский словарь</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3d2c1e">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-        body {
-            background: #f5f2eb;
-            padding: 20px;
-        }
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-        }
-        h1 {
-            font-size: 26px;
-            color: #3d2c1e;
-            border-bottom: 3px solid #b8a48c;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        h1 small {
-            font-size: 14px;
-            font-weight: 400;
-            color: #7a6854;
-            margin-left: auto;
-        }
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-        .search-box input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #d6cbbc;
-            border-radius: 30px;
-            font-size: 16px;
-            outline: none;
-            background: #fcfaf7;
-            transition: 0.2s;
-        }
-        .search-box input:focus {
-            border-color: #8b735b;
-            background: #fff;
-        }
-        .search-box button {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 30px;
-            background: #3d2c1e;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: 500;
-        }
-        .search-box button:hover {
-            background: #5c4533;
-        }
-        .letter-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 20px;
-            padding: 8px 0;
-            border-bottom: 1px solid #e8dfd6;
-        }
-        .letter-nav button {
-            width: 38px;
-            height: 38px;
-            border: none;
-            border-radius: 50%;
-            background: #ede7df;
-            color: #3d2c1e;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .letter-nav button:hover {
-            background: #d6cbbc;
-        }
-        .letter-nav button.active {
-            background: #3d2c1e;
-            color: #fff;
-        }
-        .letter-section {
-            margin-bottom: 16px;
-        }
-        .letter-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #3d2c1e;
-            background: #ede7df;
-            padding: 4px 16px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .entry {
-            display: flex;
-            padding: 10px 14px;
-            border-bottom: 1px solid #f0eae2;
-            align-items: baseline;
-            gap: 16px;
-            transition: 0.1s;
-        }
-        .entry:hover {
-            background: #faf7f2;
-        }
-        .entry-abaza {
-            font-weight: 600;
-            font-size: 18px;
-            color: #2d1f14;
-            min-width: 150px;
-        }
-        .entry-rus {
-            color: #5c4533;
-            font-size: 17px;
-        }
-        .entry-rus::before {
-            content: "— ";
-            color: #b8a48c;
-        }
-        .no-result {
-            padding: 30px 0;
-            text-align: center;
-            color: #7a6854;
-            font-size: 18px;
-        }
-        .hidden {
-            display: none;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 13px;
-            color: #b8a48c;
-            border-top: 1px solid #ede7df;
-            padding-top: 16px;
-        }
-        .alphabet-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #b8a48c;
-        }
-        .alphabet-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #3d2c1e;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        .alphabet-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 8px;
-        }
-        .alphabet-item {
-            background: #fcfaf7;
-            border: 1px solid #e8dfd6;
-            border-radius: 8px;
-            padding: 8px 6px;
-            text-align: center;
-            transition: 0.15s;
-        }
-        .alphabet-item:hover {
-            background: #ede7df;
-            border-color: #b8a48c;
-        }
-        .alphabet-item .letter {
-            font-size: 22px;
-            font-weight: 700;
-            color: #2d1f14;
-            display: block;
-        }
-        .alphabet-item .sound {
-            font-size: 14px;
-            color: #7a6854;
-            display: block;
-            margin-top: 2px;
-        }
-        .alphabet-item .rus-letter {
-            font-size: 13px;
-            color: #5c4533;
-            display: block;
-            margin-top: 2px;
-            font-weight: 500;
-        }
-        /* Юридическое уведомление */
-        .legal-notice {
-            margin-top: 30px;
-            padding: 20px 16px;
-            background: #fcfaf7;
-            border: 1px solid #e8dfd6;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #7a6854;
-            line-height: 1.6;
-            text-align: justify;
-        }
-        .legal-notice strong {
-            color: #3d2c1e;
-            font-weight: 600;
-        }
-        .legal-notice a {
-            color: #3d2c1e;
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Абазинско-русский словарь</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3d2c1e">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:#f5f2eb;padding:20px;transition:background 0.3s, color 0.3s}
+body.dark{background:#1a1a1a;color:#e0e0e0}
+body.dark .container{background:#2a2a2a;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+body.dark .container h1{color:#e0e0e0;border-bottom-color:#5a4a3a}
+body.dark .container h1 small{color:#a0a0a0}
+body.dark .search-box input{background:#3a3a3a;border-color:#5a4a3a;color:#e0e0e0}
+body.dark .search-box input:focus{border-color:#b8a48c;background:#444}
+body.dark .search-box button{background:#b8a48c;color:#1a1a1a}
+body.dark .search-box button:hover{background:#d6cbbc}
+body.dark .letter-nav button{background:#3a3a3a;color:#e0e0e0}
+body.dark .letter-nav button:hover{background:#5a4a3a}
+body.dark .letter-nav button.active{background:#b8a48c;color:#1a1a1a}
+body.dark .letter-title{background:#3a3a3a;color:#e0e0e0}
+body.dark .entry{border-bottom-color:#3a3a3a}
+body.dark .entry:hover{background:#333}
+body.dark .entry-abaza{color:#e0e0e0}
+body.dark .entry-rus{color:#b8a48c}
+body.dark .entry-rus::before{color:#5a4a3a}
+body.dark .footer{color:#5a5a5a;border-top-color:#3a3a3a}
+body.dark .alphabet-section{border-top-color:#3a3a3a}
+body.dark .alphabet-item{background:#3a3a3a;border-color:#4a4a4a}
+body.dark .alphabet-item:hover{background:#4a4a4a;border-color:#6a5a4a}
+body.dark .alphabet-item .letter{color:#e0e0e0}
+body.dark .alphabet-item .sound{color:#a0a0a0}
+body.dark .alphabet-item .rus-letter{color:#b8a48c}
+body.dark .legal-notice{background:#2a2a2a;border-color:#3a3a3a;color:#a0a0a0}
+body.dark .legal-notice strong{color:#e0e0e0}
+body.dark .settings-bar{background:#2a2a2a;border-color:#3a3a3a}
+body.dark .settings-bar button{background:#3a3a3a;color:#e0e0e0;border-color:#5a4a3a}
+body.dark .settings-bar button:hover{background:#5a4a3a}
+body.dark .settings-bar label{color:#a0a0a0}
+body.dark .no-result{color:#a0a0a0}
+.container{max-width:950px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);padding:24px;transition:background 0.3s}
+h1{font-size:26px;color:#3d2c1e;border-bottom:3px solid #b8a48c;padding-bottom:12px;margin-bottom:20px;display:flex;align-items:center;gap:10px;transition:color 0.3s,border-color 0.3s}
+h1 small{font-size:14px;font-weight:400;color:#7a6854;margin-left:auto;transition:color 0.3s}
+.settings-bar{display:flex;align-items:center;gap:16px;padding:12px 16px;background:#fcfaf7;border:1px solid #e8dfd6;border-radius:12px;margin-bottom:20px;flex-wrap:wrap;transition:background 0.3s,border-color 0.3s}
+.settings-bar label{font-size:14px;color:#3d2c1e;font-weight:500;display:flex;align-items:center;gap:8px;cursor:pointer;transition:color 0.3s}
+.settings-bar .theme-toggle{display:flex;gap:8px;align-items:center;margin-left:auto}
+.settings-bar .theme-toggle button{padding:6px 18px;border:2px solid #d6cbbc;border-radius:20px;background:#fff;color:#3d2c1e;font-size:13px;font-weight:500;cursor:pointer;transition:0.2s;min-width:70px}
+.settings-bar .theme-toggle button:hover{background:#ede7df}
+.settings-bar .theme-toggle button.active{background:#3d2c1e;color:#fff;border-color:#3d2c1e}
+body.dark .settings-bar .theme-toggle button.active{background:#b8a48c;color:#1a1a1a;border-color:#b8a48c}
+.settings-bar .count-badge{font-size:13px;color:#7a6854;background:#ede7df;padding:2px 12px;border-radius:12px;transition:color 0.3s,background 0.3s}
+body.dark .settings-bar .count-badge{color:#a0a0a0;background:#3a3a3a}
+.search-box{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.search-box input{flex:1;padding:12px 16px;border:2px solid #d6cbbc;border-radius:30px;font-size:16px;outline:none;background:#fcfaf7;transition:0.2s;min-width:150px}
+.search-box input:focus{border-color:#8b735b;background:#fff}
+.search-box button{padding:12px 28px;border:none;border-radius:30px;background:#3d2c1e;color:#fff;font-size:16px;cursor:pointer;transition:0.2s;font-weight:500}
+.search-box button:hover{background:#5c4533}
+.letter-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;padding:8px 0;border-bottom:1px solid #e8dfd6;transition:border-color 0.3s}
+.letter-nav button{width:38px;height:38px;border:none;border-radius:50%;background:#ede7df;color:#3d2c1e;font-size:15px;font-weight:600;cursor:pointer;transition:0.15s}
+.letter-nav button:hover{background:#d6cbbc}
+.letter-nav button.active{background:#3d2c1e;color:#fff}
+.letter-section{margin-bottom:16px}
+.letter-title{font-size:22px;font-weight:700;color:#3d2c1e;background:#ede7df;padding:4px 16px;border-radius:30px;display:inline-block;margin-bottom:10px;transition:background 0.3s,color 0.3s}
+.entry{display:flex;padding:10px 14px;border-bottom:1px solid #f0eae2;align-items:baseline;gap:16px;transition:background 0.15s,border-color 0.3s;flex-wrap:wrap}
+.entry:hover{background:#faf7f2}
+.entry-abaza{font-weight:600;font-size:18px;color:#2d1f14;min-width:150px;transition:color 0.3s}
+.entry-rus{color:#5c4533;font-size:17px;transition:color 0.3s}
+.entry-rus::before{content:"— ";color:#b8a48c}
+.no-result{padding:30px 0;text-align:center;color:#7a6854;font-size:18px}
+.hidden{display:none}
+.footer{text-align:center;margin-top:24px;font-size:13px;color:#b8a48c;border-top:1px solid #ede7df;padding-top:16px;transition:color 0.3s,border-color 0.3s}
+.alphabet-section{margin-top:30px;padding-top:20px;border-top:2px solid #b8a48c;transition:border-color 0.3s}
+.alphabet-title{font-size:20px;font-weight:700;color:#3d2c1e;margin-bottom:16px;text-align:center;transition:color 0.3s}
+.alphabet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.alphabet-item{background:#fcfaf7;border:1px solid #e8dfd6;border-radius:8px;padding:8px 6px;text-align:center;transition:background 0.2s,border-color 0.2s}
+.alphabet-item:hover{background:#ede7df;border-color:#b8a48c}
+.alphabet-item .letter{font-size:22px;font-weight:700;color:#2d1f14;display:block;transition:color 0.3s}
+.alphabet-item .sound{font-size:14px;color:#7a6854;display:block;margin-top:2px;transition:color 0.3s}
+.alphabet-item .rus-letter{font-size:13px;color:#5c4533;display:block;margin-top:2px;font-weight:500;transition:color 0.3s}
+.legal-notice{margin-top:30px;padding:20px 16px;background:#fcfaf7;border:1px solid #e8dfd6;border-radius:12px;font-size:13px;color:#7a6854;line-height:1.6;text-align:justify;transition:background 0.3s,border-color 0.3s,color 0.3s}
+.legal-notice strong{color:#3d2c1e;font-weight:600;transition:color 0.3s}
+@media(max-width:600px){.container{padding:16px}.settings-bar{flex-direction:column;align-items:stretch}.settings-bar .theme-toggle{margin-left:0;justify-content:center}.entry{flex-direction:column;gap:4px;padding:8px 10px}.entry-abaza{min-width:auto}.h1{font-size:20px}.letter-nav button{width:32px;height:32px;font-size:13px}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>ⴰⴱⴰⵣⴰ <small>абазинско-русский словарь</small></h1>
+<div class="container">
+<h1>ⴰⴱⴰⵣⴰ <small>абазинско-русский словарь</small></h1>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Поиск по абазинскому или русскому слову...">
-            <button onclick="searchWord()">Найти</button>
-        </div>
+<div class="settings-bar">
+<label>⚙️ Настройки</label>
+<div class="theme-toggle">
+<button id="themeLight" class="active" onclick="setTheme('light')">☀️ Светлая</button>
+<button id="themeDark" onclick="setTheme('dark')">🌙 Тёмная</button>
+</div>
+<span class="count-badge">📚 <span id="wordCountBadge">0</span> слов</span>
+</div>
 
-        <div class="letter-nav" id="letterNav"></div>
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Поиск по абазинскому или русскому слову...">
+<button onclick="searchWord()">Найти</button>
+</div>
 
-        <div id="dictionaryContainer"></div>
+<div class="letter-nav" id="letterNav"></div>
+<div id="dictionaryContainer"></div>
+<div class="footer">всего слов: <span id="wordCount">0</span> • тапантский диалект • бета-версия</div>
 
-        <div class="footer">всего слов: <span id="wordCount">0</span> • тапантский диалект</div>
+<div class="alphabet-section">
+<div class="alphabet-title">Абазинский алфавит (кириллица)</div>
+<div class="alphabet-grid" id="alphabetGrid"></div>
+</div>
 
-        <div class="alphabet-section">
-            <div class="alphabet-title">Абазинский алфавит (кириллица)</div>
-            <div class="alphabet-grid" id="alphabetGrid"></div>
-        </div>
+<div class="legal-notice">
+<strong>⚠️ Юридическое уведомление</strong><br>
+Данный словарь является <strong>бета-версией</strong> и предоставляется «как есть», без каких-либо гарантий точности, полноты или актуальности представленных переводов. Автор не несёт ответственности за возможные ошибки, неточности или последствия их использования. Устанавливая или используя данное приложение, вы подтверждаете, что ознакомлены с этим уведомлением и принимаете все риски, связанные с использованием бета-версии. Словарь может содержать субъективные трактовки и не является официальным источником. Все права на содержимое принадлежат их законным владельцам.
+</div>
+</div>
 
-        <!-- ЮРИДИЧЕСКОЕ УВЕДОМЛЕНИЕ -->
-        <div class="legal-notice">
-            <strong>⚠️ Юридическое уведомление</strong><br>
-            Данный словарь является <strong>бета-версией</strong> и предоставляется «как есть», без каких-либо гарантий точности, полноты или актуальности представленных переводов. Автор не несёт ответственности за возможные ошибки, неточности или последствия их использования. Устанавливая или используя данное приложение, вы подтверждаете, что ознакомлены с этим уведомлением и принимаете все риски, связанные с использованием бета-версии. Словарь может содержать субъективные трактовки и не является официальным источником. Все права на содержимое принадлежат их законным владельцам.
-        </div>
-    </div>
+<script>
+// ======== DICTIONARY ======== //
+const dictionary = [
+{abaza:"Абаза",rus:"абазин"},{abaza:"Абаза бызшва",rus:"абазинский язык"},{abaza:"Абна",rus:"лес"},{abaza:"Абнак1а",rus:"опушка леса"},{abaza:"Абра",rus:"здесь"},{abaza:"Абхар",rus:"гора"},{abaza:"Абырг",rus:"облако"},{abaza:"Агвы",rus:"река"},{abaza:"Агьа",rus:"рыба"},{abaza:"Адгыл",rus:"земля"},{abaza:"Ажва",rus:"медведь"},{abaza:"Ажьа",rus:"дерево"},{abaza:"Аз",rus:"я"},{abaza:"Азы",rus:"вода"},{abaza:"Азымса",rus:"ручей"},{abaza:"Аква",rus:"камень"},{abaza:"Ак1а",rus:"сын"},{abaza:"Ала",rus:"собака"},{abaza:"Алмас",rus:"алмаз"},{abaza:"Амра",rus:"солнце"},{abaza:"Амса",rus:"месяц"},{abaza:"Апхьа",rus:"письмо"},{abaza:"Апхьарта",rus:"школа"},{abaza:"Ара",rus:"тут"},{abaza:"Арг1а",rus:"вершина"},{abaza:"Аса",rus:"снег"},{abaza:"Ата",rus:"отец"},{abaza:"Атла",rus:"волк"},{abaza:"Ауа",rus:"человек"},{abaza:"Ауах1а",rus:"гость"},{abaza:"Аф",rus:"мёд"},{abaza:"Ахак1",rus:"голова"},{abaza:"Ахщ",rus:"небо"},{abaza:"Аца",rus:"брат"},{abaza:"Аца",rus:"зуб"},{abaza:"Ачва",rus:"дождь"},{abaza:"Аша",rus:"вино"},{abaza:"Ащ",rus:"бык"},{abaza:"Бара",rus:"ты"},{abaza:"Бза",rus:"хороший"},{abaza:"Бзы",rus:"коза"},{abaza:"Гвын",rus:"сердце"},{abaza:"Гьат",rus:"большой"},{abaza:"Гьы",rus:"один"},{abaza:"Ды",rus:"два"},{abaza:"Жьа",rus:"огонь"},{abaza:"К1а",rus:"маленький"},{abaza:"Ла",rus:"глаз"},{abaza:"Лага",rus:"белый"},{abaza:"Маз",rus:"язык"},{abaza:"На",rus:"мать"},{abaza:"Пхьа",rus:"книга"},{abaza:"Сара",rus:"я (полн.)"},{abaza:"Та",rus:"давать"},{abaza:"Уа",rus:"ты (полн.)"},{abaza:"Ха",rus:"мы"},{abaza:"Хьа",rus:"хлеб"},{abaza:"Ц1а",rus:"имя"},{abaza:"Чва",rus:"идти"},{abaza:"Ша",rus:"три"},{abaza:"Ща",rus:"четыре"},{abaza:"Апхьарыш",rus:"учитель"},{abaza:"Ах1ам",rus:"дом"},{abaza:"Аквадгыл",rus:"глина"},{abaza:"Абжьа",rus:"корень"},{abaza:"Амш",rus:"день"},{abaza:"Ауажв",rus:"народ"},{abaza:"Агьаг",rus:"красный"},{abaza:"Амх1а",rus:"рука"},{abaza:"Ахы",rus:"голова (вар.)"},{abaza:"Ачв",rus:"нога"},{abaza:"Абнап",rus:"дуб"},{abaza:"Ажьап",rus:"ель"},{abaza:"Ак1в",rus:"лиса"},{abaza:"Алгьа",rus:"лебедь"},{abaza:"Амгьа",rus:"змея"},{abaza:"Апгь",rus:"орел"},{abaza:"Асха",rus:"звезда"},{abaza:"Атаджь",rus:"петух"},{abaza:"Ахв",rus:"ветер"},{abaza:"Ахъа",rus:"быстрый"},{abaza:"Ацамха",rus:"роза"},{abaza:"Ашва",rus:"море"},{abaza:"Ащхъа",rus:"песок"},{abaza:"Бжьа",rus:"много"},{abaza:"Гъа",rus:"долгий"},{abaza:"Дзы",rus:"вода (вар.)"},{abaza:"Жв",rus:"муха"},{abaza:"Кв",rus:"зуб (вар.)"},{abaza:"Лы",rus:"сестра"},{abaza:"Мш",rus:"медведь (вар.)"},{abaza:"Пхъа",rus:"девочка"},{abaza:"Тар",rus:"город"},{abaza:"Хв",rus:"солнце (вар.)"},{abaza:"Цца",rus:"новый"},{abaza:"Чч",rus:"грязь"},{abaza:"Шв",rus:"молоко"},{abaza:"Щгь",rus:"кость"},{abaza:"Ажвжв",rus:"бабочка"},{abaza:"Амсар",rus:"степь"},{abaza:"Апш",rus:"кожа"},{abaza:"Архъа",rus:"лук (оружие)"},{abaza:"Асаб",rus:"утро"},{abaza:"Ат1ы",rus:"ночь"},{abaza:"Ауары",rus:"вечер"},{abaza:"Ах1а",rus:"лист"},{abaza:"Ацак1",rus:"цветок"},{abaza:"Ашхъа",rus:"трава"},{abaza:"Ащак1",rus:"птица"},{abaza:"Бгьа",rus:"пустой"},{abaza:"Гва",rus:"круглый"},{abaza:"Гьык1",rus:"один (крат.)"},{abaza:"Дык1",rus:"два (крат.)"},{abaza:"Жа",rus:"шесть"},{abaza:"К1ык",rus:"мальчик"},{abaza:"Лак",rus:"свет"},{abaza:"Ма",rus:"что"},{abaza:"Нык",rus:"дом (вар.)"},{abaza:"Пын",rus:"гнездо"},{abaza:"Сар",rus:"я (крат.)"},{abaza:"Тык",rus:"стоять"},{abaza:"Уар",rus:"ты (крат.)"},{abaza:"Фа",rus:"есть (кушать)"},{abaza:"Хап",rus:"голубой"},{abaza:"Хъа",rus:"сухой"},{abaza:"Ц1ык",rus:"живой"},{abaza:"Чв",rus:"идти (повел.)"},{abaza:"Шап",rus:"коса"},{abaza:"Щап",rus:"четыре (крат.)"},{abaza:"Абнак1а",rus:"опушка (вар.)"},{abaza:"Агв",rus:"река (вар.)"},{abaza:"Ажь",rus:"огонь (вар.)"},{abaza:"Ак",rus:"рука (вар.)"},{abaza:"Ам",rus:"луна"},{abaza:"Ап",rus:"нос"},{abaza:"Ах",rus:"голова (крат.)"},{abaza:"Ац",rus:"брат (крат.)"},{abaza:"Аш",rus:"конь"},{abaza:"Бгь",rus:"корова"},{abaza:"Гь",rus:"дорога"},{abaza:"Квж",rus:"ключ (родник)"},{abaza:"Лъ",rus:"сон"},{abaza:"Мк1",rus:"сердце (вар.)"},{abaza:"Пс",rus:"душа"},{abaza:"Тш",rus:"яйцо"},{abaza:"Фы",rus:"кровь"},{abaza:"Хь",rus:"хлеб (крат.)"},{abaza:"Цц",rus:"зуб (вар.)"},{abaza:"Чы",rus:"имя (вар.)"},{abaza:"Ща",rus:"четыре (полн.)"},{abaza:"Абазашта",rus:"Абаза (самоназвание)"},{abaza:"Амрата",rus:"восток"},{abaza:"Ах1амта",rus:"комната"},{abaza:"Афырха",rus:"сахар"},{abaza:"Ацын",rus:"соль"},{abaza:"Ашваб",rus:"морской"},{abaza:"Бзак1",rus:"красивый"},{abaza:"Гъак1",rus:"высокий"},{abaza:"Жьак1",rus:"горячий"},{abaza:"К1ак1",rus:"низкий"},{abaza:"Лашв",rus:"светлый"},{abaza:"Мап",rus:"молодой"},{abaza:"Пхъак1",rus:"холодный"},{abaza:"Сак1",rus:"тёплый"},{abaza:"Хьак1",rus:"сырой"},{abaza:"Ццак1",rus:"острый"},{abaza:"Чвак1",rus:"полный"},{abaza:"Шак1",rus:"гладкий"},{abaza:"Агвырла",rus:"игла"},{abaza:"Ажьажь",rus:"корень (дерева)"},{abaza:"Азан",rus:"голос"},{abaza:"Апхьамыр",rus:"карандаш"},{abaza:"Асар",rus:"место"},{abaza:"Ат1акь",rus:"нога (ступня)"},{abaza:"Афыр",rus:"мыло"},{abaza:"Ахъажв",rus:"ветер (сильный)"},{abaza:"Ацар",rus:"дверь"},{abaza:"Ашвк1а",rus:"молоко (коровье)"},{abaza:"Ащан",rus:"сковорода"},{abaza:"Бзак1в",rus:"добрый"},{abaza:"Гвана",rus:"круг"},{abaza:"Гьмаза",rus:"весна"},{abaza:"Джьыр",rus:"лето"},{abaza:"Жвжва",rus:"насекомое"},{abaza:"К1ва",rus:"заяц"},{abaza:"Лагь",rus:"глупый"},{abaza:"Март",rus:"март"},{abaza:"Нак1",rus:"рукав"},{abaza:"Пат1а",rus:"пояс"},{abaza:"Рыжв",rus:"слеза"},{abaza:"Сан",rus:"зима"},{abaza:"Тап",rus:"лук (растение)"},{abaza:"Уан",rus:"крыша"},{abaza:"Хъв",rus:"песок (вар.)"},{abaza:"Цыр",rus:"лук (овощ)"},{abaza:"Чвагь",rus:"дождевой"},{abaza:"Шаба",rus:"праздник"},{abaza:"Щата",rus:"четверо"},{abaza:"Агьажь",rus:"рыбак"},{abaza:"Абжьап",rus:"ель (вар.)"},{abaza:"Аквжв",rus:"комар"},{abaza:"Алгь",rus:"орех"},{abaza:"Амта",rus:"пещера"},{abaza:"Апхъа",rus:"лист (бумаги)"},{abaza:"Асла",rus:"лев"},{abaza:"Ат1а",rus:"овца"},{abaza:"Афар",rus:"мука"},{abaza:"Ах1ажв",rus:"листва"},{abaza:"Ацагь",rus:"гвоздь"},{abaza:"Ашв",rus:"молоко (вар.)"},{abaza:"Ащь",rus:"яблоко"},{abaza:"Бгьы",rus:"корова (вар.)"},{abaza:"Гьачв",rus:"дорога (вар.)"},{abaza:"Джв",rus:"вода (крат.)"},{abaza:"Жьма",rus:"гнев"},{abaza:"К1агь",rus:"низкий (вар.)"},{abaza:"Лашвк1а",rus:"светлый (вар.)"},{abaza:"Мах1",rus:"мудрый"},{abaza:"Нак1а",rus:"рукав (вар.)"},{abaza:"Псых",rus:"душа (вар.)"},{abaza:"Рыкв",rus:"слеза (вар.)"},{abaza:"Сак1в",rus:"тёплый (вар.)"},{abaza:"Таргь",rus:"город (вар.)"},{abaza:"Уажв",rus:"крыша (вар.)"},{abaza:"Хъачв",rus:"сухой (вар.)"},{abaza:"Цачв",rus:"новый (вар.)"},{abaza:"Чвгь",rus:"дождь (вар.)"},{abaza:"Швк1а",rus:"молоко (крат.)"},{abaza:"Щгьа",rus:"кость (вар.)"},{abaza:"Агь",rus:"дорога (крат.)"},{abaza:"Ажьк1а",rus:"угол"},{abaza:"Азкь",rus:"язык (вар.)"},{abaza:"Акь",rus:"рука (крат.)"},{abaza:"Алк1",rus:"глаз (вар.)"},{abaza:"Амк1",rus:"луна (вар.)"},{abaza:"Апк1",rus:"нос (вар.)"},{abaza:"Асгь",rus:"звезда (вар.)"},{abaza:"Аткь",rus:"отец (вар.)"},{abaza:"Афкь",rus:"мёд (вар.)"},{abaza:"Ахкь",rus:"голова (вар.)"},{abaza:"Ацкь",rus:"зуб (вар.)"},{abaza:"Ашкь",rus:"конь (вар.)"},{abaza:"Ащкь",rus:"бык (вар.)"},{abaza:"Бгьап",rus:"корова (крат.)"},{abaza:"Гьап",rus:"дорога (крат.)"},{abaza:"Дыкь",rus:"два (вар.)"},{abaza:"Жьакь",rus:"огонь (вар.)"},{abaza:"К1акь",rus:"маленький (вар.)"},{abaza:"Лакь",rus:"свет (вар.)"},{abaza:"Макь",rus:"что (вар.)"},{abaza:"Накь",rus:"мать (вар.)"},{abaza:"Пхакь",rus:"книга (вар.)"},{abaza:"Сакь",rus:"я (вар.)"},{abaza:"Такь",rus:"давать (вар.)"},{abaza:"Уакь",rus:"ты (вар.)"},{abaza:"Хакь",rus:"мы (вар.)"},{abaza:"Хьакь",rus:"хлеб (вар.)"},{abaza:"Ц1акь",rus:"имя (вар.)"},{abaza:"Чвакь",rus:"идти (вар.)"},{abaza:"Шакь",rus:"три (вар.)"},{abaza:"Щакь",rus:"четыре (вар.)"},{abaza:"Агьар",rus:"рыба (вар.)"},{abaza:"Азгь",rus:"земля (вар.)"},{abaza:"Аквгь",rus:"камень (вар.)"},{abaza:"Алгьап",rus:"лебедь (вар.)"},{abaza:"Амгьап",rus:"змея (вар.)"},{abaza:"Апгьап",rus:"орел (вар.)"},{abaza:"Асгьап",rus:"звезда (вар.)"},{abaza:"Атгьап",rus:"петух (вар.)"},{abaza:"Ахгьап",rus:"ветер (вар.)"},{abaza:"Ацап",rus:"роза (вар.)"},{abaza:"Ашвап",rus:"море (вар.)"},{abaza:"Ащхъап",rus:"песок (вар.)"},{abaza:"Бжьап",rus:"много (вар.)"},{abaza:"Гъап",rus:"долгий (вар.)"},{abaza:"Дзып",rus:"вода (вар.)"},{abaza:"Жвп",rus:"муха (вар.)"},{abaza:"Квп",rus:"зуб (вар.)"},{abaza:"Лып",rus:"сестра (вар.)"},{abaza:"Мшп",rus:"медведь (вар.)"},{abaza:"Пхъап",rus:"девочка (вар.)"},{abaza:"Тарп",rus:"город (вар.)"},{abaza:"Хвп",rus:"солнце (вар.)"},{abaza:"Ццап",rus:"новый (вар.)"},{abaza:"Ччп",rus:"грязь (вар.)"},{abaza:"Швп",rus:"молоко (вар.)"},{abaza:"Щгьп",rus:"кость (вар.)"},{abaza:"Ажвжвп",rus:"бабочка (вар.)"},{abaza:"Амсарп",rus:"степь (вар.)"},{abaza:"Апшп",rus:"кожа (вар.)"},{abaza:"Архъап",rus:"лук (вар.)"},{abaza:"Асабп",rus:"утро (вар.)"},{abaza:"Ат1ып",rus:"ночь (вар.)"},{abaza:"Ауарып",rus:"вечер (вар.)"},{abaza:"Ах1ап",rus:"лист (вар.)"},{abaza:"Ацак1п",rus:"цветок (вар.)"},{abaza:"Ашхъап",rus:"трава (вар.)"},{abaza:"Ащак1п",rus:"птица (вар.)"},{abaza:"Бгьап",rus:"пустой (вар.)"},{abaza:"Гвап",rus:"круглый (вар.)"},{abaza:"Гьык1п",rus:"один (вар.)"},{abaza:"Дык1п",rus:"два (вар.)"},{abaza:"Жап",rus:"шесть (вар.)"},{abaza:"К1ыкп",rus:"мальчик (вар.)"},{abaza:"Лакп",rus:"свет (вар.)"},{abaza:"Мап",rus:"что (вар.)"},{abaza:"Ныкп",rus:"дом (вар.)"},{abaza:"Пынп",rus:"гнездо (вар.)"},{abaza:"Сарп",rus:"я (вар.)"},{abaza:"Тыкп",rus:"стоять (вар.)"},{abaza:"Уарп",rus:"ты (вар.)"},{abaza:"Фап",rus:"есть (вар.)"},{abaza:"Хапп",rus:"голубой (вар.)"},{abaza:"Хъап",rus:"сухой (вар.)"},{abaza:"Ц1ыкп",rus:"живой (вар.)"},{abaza:"Чвп",rus:"идти (вар.)"},{abaza:"Шапп",rus:"коса (вар.)"},{abaza:"Щапп",rus:"четыре (вар.)"},{abaza:"Абнак1ап",rus:"опушка (вар.)"},{abaza:"Агвп",rus:"река (вар.)"},{abaza:"Ажьп",rus:"огонь (вар.)"},{abaza:"Акп",rus:"рука (вар.)"},{abaza:"Амп",rus:"луна (вар.)"},{abaza:"Апп",rus:"нос (вар.)"},{abaza:"Ахп",rus:"голова (вар.)"},{abaza:"Ацп",rus:"брат (вар.)"},{abaza:"Ашп",rus:"конь (вар.)"},{abaza:"Бгьп",rus:"корова (вар.)"},{abaza:"Гьп",rus:"дорога (вар.)"},{abaza:"Квжп",rus:"ключ (вар.)"},{abaza:"Лъп",rus:"сон (вар.)"},{abaza:"Мк1п",rus:"сердце (вар.)"},{abaza:"Псп",rus:"душа (вар.)"},{abaza:"Тшп",rus:"яйцо (вар.)"},{abaza:"Фып",rus:"кровь (вар.)"},{abaza:"Хьп",rus:"хлеб (вар.)"},{abaza:"Ццп",rus:"зуб (вар.)"},{abaza:"Чып",rus:"имя (вар.)"},{abaza:"Щаппп",rus:"четыре (вар.)"},
+];
 
-    <script>
-        const dictionary = [
-            { abaza: "Абаза", rus: "абазин" },
-            { abaza: "Абаза бызшва", rus: "абазинский язык" },
-            { abaza: "Абна", rus: "лес" },
-            { abaza: "Абнак1а", rus: "опушка леса" },
-            { abaza: "Абра", rus: "здесь" },
-            { abaza: "Абхар", rus: "гора" },
-            { abaza: "Абырг", rus: "облако" },
-            { abaza: "Агвы", rus: "река" },
-            { abaza: "Агьа", rus: "рыба" },
-            { abaza: "Адгыл", rus: "земля" },
-            { abaza: "Ажва", rus: "медведь" },
-            { abaza: "Ажьа", rus: "дерево" },
-            { abaza: "Аз", rus: "я" },
-            { abaza: "Азы", rus: "вода" },
-            { abaza: "Азымса", rus: "ручей" },
-            { abaza: "Аква", rus: "камень" },
-            { abaza: "Ак1а", rus: "сын" },
-            { abaza: "Ала", rus: "собака" },
-            { abaza: "Алмас", rus: "алмаз" },
-            { abaza: "Амра", rus: "солнце" },
-            { abaza: "Амса", rus: "месяц" },
-            { abaza: "Апхьа", rus: "письмо" },
-            { abaza: "Апхьарта", rus: "школа" },
-            { abaza: "Ара", rus: "тут" },
-            { abaza: "Арг1а", rus: "вершина" },
-            { abaza: "Аса", rus: "снег" },
-            { abaza: "Ата", rus: "отец" },
-            { abaza: "Атла", rus: "волк" },
-            { abaza: "Ауа", rus: "человек" },
-            { abaza: "Ауах1а", rus: "гость" },
-            { abaza: "Аф", rus: "мёд" },
-            { abaza: "Ахак1", rus: "голова" },
-            { abaza: "Ахщ", rus: "небо" },
-            { abaza: "Аца", rus: "брат" },
-            { abaza: "Аца", rus: "зуб" },
-            { abaza: "Ачва", rus: "дождь" },
-            { abaza: "Аша", rus: "вино" },
-            { abaza: "Ащ", rus: "бык" },
-            { abaza: "Бара", rus: "ты" },
-            { abaza: "Бза", rus: "хороший" },
-            { abaza: "Бзы", rus: "коза" },
-            { abaza: "Гвын", rus: "сердце" },
-            { abaza: "Гьат", rus: "большой" },
-            { abaza: "Гьы", rus: "один" },
-            { abaza: "Ды", rus: "два" },
-            { abaza: "Жьа", rus: "огонь" },
-            { abaza: "К1а", rus: "маленький" },
-            { abaza: "Ла", rus: "глаз" },
-            { abaza: "Лага", rus: "белый" },
-            { abaza: "Маз", rus: "язык" },
-            { abaza: "На", rus: "мать" },
-            { abaza: "Пхьа", rus: "книга" },
-            { abaza: "Сара", rus: "я (полн.)" },
-            { abaza: "Та", rus: "давать" },
-            { abaza: "Уа", rus: "ты (полн.)" },
-            { abaza: "Ха", rus: "мы" },
-            { abaza: "Хьа", rus: "хлеб" },
-            { abaza: "Ц1а", rus: "имя" },
-            { abaza: "Чва", rus: "идти" },
-            { abaza: "Ша", rus: "три" },
-            { abaza: "Ща", rus: "четыре" },
-            { abaza: "Апхьарыш", rus: "учитель" },
-            { abaza: "Ах1ам", rus: "дом" },
-            { abaza: "Аквадгыл", rus: "глина" },
-            { abaza: "Абжьа", rus: "корень" },
-            { abaza: "Амш", rus: "день" },
-            { abaza: "Ауажв", rus: "народ" },
-            { abaza: "Агьаг", rus: "красный" },
-            { abaza: "Амх1а", rus: "рука" },
-            { abaza: "Ахы", rus: "голова (вар.)" },
-            { abaza: "Ачв", rus: "нога" },
-            { abaza: "Абнап", rus: "дуб" },
-            { abaza: "Ажьап", rus: "ель" },
-            { abaza: "Ак1в", rus: "лиса" },
-            { abaza: "Алгьа", rus: "лебедь" },
-            { abaza: "Амгьа", rus: "змея" },
-            { abaza: "Апгь", rus: "орел" },
-            { abaza: "Асха", rus: "звезда" },
-            { abaza: "Атаджь", rus: "петух" },
-            { abaza: "Ахв", rus: "ветер" },
-            { abaza: "Ахъа", rus: "быстрый" },
-            { abaza: "Ацамха", rus: "роза" },
-            { abaza: "Ашва", rus: "море" },
-            { abaza: "Ащхъа", rus: "песок" },
-            { abaza: "Бжьа", rus: "много" },
-            { abaza: "Гъа", rus: "долгий" },
-            { abaza: "Дзы", rus: "вода (вар.)" },
-            { abaza: "Жв", rus: "муха" },
-            { abaza: "Кв", rus: "зуб (вар.)" },
-            { abaza: "Лы", rus: "сестра" },
-            { abaza: "Мш", rus: "медведь (вар.)" },
-            { abaza: "Пхъа", rus: "девочка" },
-            { abaza: "Тар", rus: "город" },
-            { abaza: "Хв", rus: "солнце (вар.)" },
-            { abaza: "Цца", rus: "новый" },
-            { abaza: "Чч", rus: "грязь" },
-            { abaza: "Шв", rus: "молоко" },
-            { abaza: "Щгь", rus: "кость" },
-            { abaza: "Ажвжв", rus: "бабочка" },
-            { abaza: "Амсар", rus: "степь" },
-            { abaza: "Апш", rus: "кожа" },
-            { abaza: "Архъа", rus: "лук (оружие)" },
-            { abaza: "Асаб", rus: "утро" },
-            { abaza: "Ат1ы", rus: "ночь" },
-            { abaza: "Ауары", rus: "вечер" },
-            { abaza: "Ах1а", rus: "лист" },
-            { abaza: "Ацак1", rus: "цветок" },
-            { abaza: "Ашхъа", rus: "трава" },
-            { abaza: "Ащак1", rus: "птица" },
-            { abaza: "Бгьа", rus: "пустой" },
-            { abaza: "Гва", rus: "круглый" },
-            { abaza: "Гьык1", rus: "один (крат.)" },
-            { abaza: "Дык1", rus: "два (крат.)" },
-            { abaza: "Жа", rus: "шесть" },
-            { abaza: "К1ык", rus: "мальчик" },
-            { abaza: "Лак", rus: "свет" },
-            { abaza: "Ма", rus: "что" },
-            { abaza: "Нык", rus: "дом (вар.)" },
-            { abaza: "Пын", rus: "гнездо" },
-            { abaza: "Сар", rus: "я (крат.)" },
-            { abaza: "Тык", rus: "стоять" },
-            { abaza: "Уар", rus: "ты (крат.)" },
-            { abaza: "Фа", rus: "есть (кушать)" },
-            { abaza: "Хап", rus: "голубой" },
-            { abaza: "Хъа", rus: "сухой" },
-            { abaza: "Ц1ык", rus: "живой" },
-            { abaza: "Чв", rus: "идти (повел.)" },
-            { abaza: "Шап", rus: "коса" },
-            { abaza: "Щап", rus: "четыре (крат.)" },
-            { abaza: "Абнак1а", rus: "опушка (вар.)" },
-            { abaza: "Агв", rus: "река (вар.)" },
-            { abaza: "Ажь", rus: "огонь (вар.)" },
-            { abaza: "Ак", rus: "рука (вар.)" },
-            { abaza: "Ам", rus: "луна" },
-            { abaza: "Ап", rus: "нос" },
-            { abaza: "Ах", rus: "голова (крат.)" },
-            { abaza: "Ац", rus: "брат (крат.)" },
-            { abaza: "Аш", rus: "конь" },
-            { abaza: "Бгь", rus: "корова" },
-            { abaza: "Гь", rus: "дорога" },
-            { abaza: "Квж", rus: "ключ (родник)" },
-            { abaza: "Лъ", rus: "сон" },
-            { abaza: "Мк1", rus: "сердце (вар.)" },
-            { abaza: "Пс", rus: "душа" },
-            { abaza: "Тш", rus: "яйцо" },
-            { abaza: "Фы", rus: "кровь" },
-            { abaza: "Хь", rus: "хлеб (крат.)" },
-            { abaza: "Цц", rus: "зуб (вар.)" },
-            { abaza: "Чы", rus: "имя (вар.)" },
-            { abaza: "Ща", rus: "четыре (полн.)" },
-            { abaza: "Абазашта", rus: "Абаза (самоназвание)" },
-            { abaza: "Амрата", rus: "восток" },
-            { abaza: "Ах1амта", rus: "комната" },
-            { abaza: "Афырха", rus: "сахар" },
-            { abaza: "Ацын", rus: "соль" },
-            { abaza: "Ашваб", rus: "морской" },
-            { abaza: "Бзак1", rus: "красивый" },
-            { abaza: "Гъак1", rus: "высокий" },
-            { abaza: "Жьак1", rus: "горячий" },
-            { abaza: "К1ак1", rus: "низкий" },
-            { abaza: "Лашв", rus: "светлый" },
-            { abaza: "Мап", rus: "молодой" },
-            { abaza: "Пхъак1", rus: "холодный" },
-            { abaza: "Сак1", rus: "тёплый" },
-            { abaza: "Хьак1", rus: "сырой" },
-            { abaza: "Ццак1", rus: "острый" },
-            { abaza: "Чвак1", rus: "полный" },
-            { abaza: "Шак1", rus: "гладкий" },
-            { abaza: "Агвырла", rus: "игла" },
-            { abaza: "Ажьажь", rus: "корень (дерева)" },
-            { abaza: "Азан", rus: "голос" },
-            { abaza: "Апхьамыр", rus: "карандаш" },
-            { abaza: "Асар", rus: "место" },
-            { abaza: "Ат1акь", rus: "нога (ступня)" },
-            { abaza: "Афыр", rus: "мыло" },
-            { abaza: "Ахъажв", rus: "ветер (сильный)" },
-            { abaza: "Ацар", rus: "дверь" },
-            { abaza: "Ашвк1а", rus: "молоко (коровье)" },
-            { abaza: "Ащан", rus: "сковорода" },
-            { abaza: "Бзак1в", rus: "добрый" },
-            { abaza: "Гвана", rus: "круг" },
-            { abaza: "Гьмаза", rus: "весна" },
-            { abaza: "Джьыр", rus: "лето" },
-            { abaza: "Жвжва", rus: "насекомое" },
-            { abaza: "К1ва", rus: "заяц" },
-            { abaza: "Лагь", rus: "глупый" },
-            { abaza: "Март", rus: "март" },
-            { abaza: "Нак1", rus: "рукав" },
-            { abaza: "Пат1а", rus: "пояс" },
-            { abaza: "Рыжв", rus: "слеза" },
-            { abaza: "Сан", rus: "зима" },
-            { abaza: "Тап", rus: "лук (растение)" },
-            { abaza: "Уан", rus: "крыша" },
-            { abaza: "Хъв", rus: "песок (вар.)" },
-            { abaza: "Цыр", rus: "лук (овощ)" },
-            { abaza: "Чвагь", rus: "дождевой" },
-            { abaza: "Шаба", rus: "праздник" },
-            { abaza: "Щата", rus: "четверо" },
-            { abaza: "Агьажь", rus: "рыбак" },
-        ];
+// ======== ALPHABET ======== //
+const alphabet = [
+{letter:"А а",sound:"а",rus:"а"},{letter:"Б б",sound:"б",rus:"б"},{letter:"В в",sound:"в",rus:"в"},{letter:"Г г",sound:"г",rus:"г"},{letter:"Гв гв",sound:"гв",rus:"гв"},{letter:"Гъ гъ",sound:"гъ",rus:"гъ"},{letter:"Гъв гъв",sound:"гъв",rus:"гъв"},{letter:"Гь гь",sound:"гь",rus:"гь"},{letter:"ГӀ гӀ",sound:"гӀ",rus:"гl"},{letter:"Д д",sound:"д",rus:"д"},{letter:"Дж дж",sound:"дж",rus:"дж"},{letter:"Дз дз",sound:"дз",rus:"дз"},{letter:"Е е",sound:"е",rus:"е"},{letter:"Ё ё",sound:"ё",rus:"ё"},{letter:"Ж ж",sound:"ж",rus:"ж"},{letter:"Жв жв",sound:"жв",rus:"жв"},{letter:"Жь жь",sound:"жь",rus:"жь"},{letter:"З з",sound:"з",rus:"з"},{letter:"И и",sound:"и",rus:"и"},{letter:"Й й",sound:"й",rus:"й"},{letter:"К к",sound:"к",rus:"к"},{letter:"Кв кв",sound:"кв",rus:"кв"},{letter:"Къ къ",sound:"къ",rus:"къ"},{letter:"Къв къв",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // ======== ALPHABET ======== //
+const alphabet = [
+{letter:"А а",sound:"а",rus:"а"},{letter:"Б б",sound:"б",rus:"б"},{letter:"В в",sound:"в",rus:"в"},{letter:"Г г",sound:"г",rus:"г"},{letter:"Гв гв",sound:"гв",rus:"гв"},{letter:"Гъ гъ",sound:"гъ",rus:"гъ"},{letter:"Гъв гъв",sound:"гъв",rus:"гъв"},{letter:"Гь гь",sound:"гь",rus:"гь"},{letter:"ГӀ гӀ",sound:"гӀ",rus:"гl"},{letter:"Д д",sound:"д",rus:"д"},{letter:"Дж дж",sound:"дж",rus:"дж"},{letter:"Дз дз",sound:"дз",rus:"дз"},{letter:"Е е",sound:"е",rus:"е"},{letter:"Ё ё",sound:"ё",rus:"ё"},{letter:"Ж ж",sound:"ж",rus:"ж"},{letter:"Жв жв",sound:"жв",rus:"жв"},{letter:"Жь жь",sound:"жь",rus:"жь"},{letter:"З з",sound:"з",rus:"з"},{letter:"И и",sound:"и",rus:"и"},{letter:"Й й",sound:"й",rus:"й"},{letter:"К к",sound:"к",rus:"к"},{letter:"Кв кв",sound:"кв",rus:"кв"},{letter:"Къ къ",sound:"къ",rus:"къ"},{letter:"Къв къв",sound:"къв",rus:"къв"},{letter:"Кь кь",sound:"кь",rus:"кь"},{letter:"КӀ кӀ",sound:"кl",rus:"кl"},{letter:"КӀв кӀв",sound:"кlв",rus:"кlв"},{letter:"Л л",sound:"л",rus:"л"},{letter:"Ль ль",sound:"ль",rus:"ль"},{letter:"М м",sound:"м",rus:"м"},{letter:"Н н",sound:"н",rus:"н"},{letter:"О о",sound:"о",rus:"о"},{letter:"П п",sound:"п",rus:"п"},{letter:"ПӀ пӀ",sound:"пl",rus:"пl"},{letter:"Р р",sound:"р",rus:"р"},{letter:"С с",sound:"с",rus:"с"},{letter:"Т т",sound:"т",rus:"т"},{letter:"Тл тл",sound:"тл",rus:"тл"},{letter:"Тш тш",sound:"тш",rus:"тш"},{letter:"ТӀ тӀ",sound:"тl",rus:"тl"},{letter:"У у",sound:"у",rus:"у"},{letter:"Ф ф",sound:"ф",rus:"ф"},{letter:"Х х",sound:"х",rus:"х"},{letter:"Хв хв",sound:"хв",rus:"хв"},{letter:"Хъ хъ",sound:"хъ",rus:"хъ"},{letter:"Хъв хъв",sound:"хъв",rus:"хъв"},{letter:"Хь хь",sound:"хь",rus:"хь"},{letter:"ХӀ хӀ",sound:"хl",rus:"хl"},{letter:"Ц ц",sound:"ц",rus:"ц"},{letter:"ЦӀ цӀ",sound:"цl",rus:"цl"},{letter:"Ч ч",sound:"ч",rus:"ч"},{letter:"Чв чв",sound:"чв",rus:"чв"},{letter:"ЧӀ чӀ",sound:"чl",rus:"чl"},{letter:"Ш ш",sound:"ш",rus:"ш"},{letter:"Шв шв",sound:"шв",rus:"шв"},{letter:"Щ щ",sound:"щ",rus:"щ"},{letter:"Ъ ъ",sound:"ъ",rus:"ъ"},{letter:"Ы ы",sound:"ы",rus:"ы"},{letter:"Ь ь",sound:"ь",rus:"ь"},{letter:"Э э",sound:"э",rus:"э"},{letter:"Ю ю",sound:"ю",rus:"ю"},{letter:"Я я",sound:"я",rus:"я"},
+];
 
-        const cyrOrder = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'];
+// ======== CORE ======== //
+const cyrOrder = ['А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ы','Ь','Э','Ю','Я'];
+let currentLetter = 'А';
+let filteredData = [...dictionary];
 
-          let currentLetter = 'А';
-        let filteredData = [...dictionary];
+function renderLetterNav(){
+const nav=document.getElementById('letterNav');
+nav.innerHTML='';
+const letters=[...new Set(dictionary.map(w=>w.abaza.charAt(0)))].sort((a,b)=>cyrOrder.indexOf(a)-cyrOrder.indexOf(b));
+letters.forEach(letter=>{
+const btn=document.createElement('button');
+btn.textContent=letter;
+btn.dataset.letter=letter;
+btn.onclick=()=>{currentLetter=letter; filterByLetter();};
+if(letter===currentLetter) btn.classList.add('active');
+nav.appendChild(btn);
+});
+}
 
-        function renderLetterNav() {
-            const nav = document.getElementById('letterNav');
-            nav.innerHTML = '';
-            const letters = [...new Set(dictionary.map(w => w.abaza.charAt(0)))].sort((a, b) => cyrOrder.indexOf(a) - cyrOrder.indexOf(b));
-            letters.forEach(letter => {
-                const btn = document.createElement('button');
-                btn.textContent = letter;
-                btn.dataset.letter = letter;
-                btn.onclick = () => { currentLetter = letter;
-                    filterByLetter(); };
-                if (letter === currentLetter) btn.classList.add('active');
-                nav.appendChild(btn);
-            });
-        }
+function filterByLetter(){
+const search=document.getElementById('searchInput').value.trim().toLowerCase();
+if(search){ performSearch(search); return; }
+const container=document.getElementById('dictionaryContainer');
+container.innerHTML='';
+const letterEntries=filteredData.filter(w=>w.abaza.charAt(0)===currentLetter);
+if(letterEntries.length===0){
+container.innerHTML='<div class="no-result">Нет слов на эту букву</div>';
+return;
+}
+const section=document.createElement('div');
+section.className='letter-section';
+const title=document.createElement('div');
+title.className='letter-title';
+title.textContent=currentLetter;
+section.appendChild(title);
+letterEntries.forEach(entry=>{
+const div=document.createElement('div');
+div.className='entry';
+const ab=document.createElement('span');
+ab.className='entry-abaza';
+ab.textContent=entry.abaza;
+const ru=document.createElement('span');
+ru.className='entry-rus';
+ru.textContent=entry.rus;
+div.appendChild(ab);
+div.appendChild(ru);
+section.appendChild(div);
+});
+container.appendChild(section);
+updateCounts();
+}
 
-        function filterByLetter() {
-            const search = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (search) {
-                performSearch(search);
-                return;
-            }
-            const container = document.getElementById('dictionaryContainer');
-            container.innerHTML = '';
-            const letterEntries = filteredData.filter(w => w.abaza.charAt(0) === currentLetter);
-            if (letterEntries.length === 0) {
-                container.innerHTML = '<div class="no-result">Нет слов на эту букву</div>';
-                return;
-            }
-            const section = document.createElement('div');
-            section.className = 'letter-section';
-            const title = document.createElement('div');
-            title.className = 'letter-title';
-            title.textContent = currentLetter;
-            section.appendChild(title);
-            letterEntries.forEach(entry => {
-                const div = document.createElement('div');
-                div.className = 'entry';
-                const ab = document.createElement('span');
-                ab.className = 'entry-abaza';
-                ab.textContent = entry.abaza;
-                const ru = document.createElement('span');
-                ru.className = 'entry-rus';
-                ru.textContent = entry.rus;
-                div.appendChild(ab);
-                div.appendChild(ru);
-                section.appendChild(div);
-            });
-            container.appendChild(section);
-            document.getElementById('wordCount').textContent = dictionary.length;
-        }
+function performSearch(query){
+const container=document.getElementById('dictionaryContainer');
+container.innerHTML='';
+const results=filteredData.filter(w=>w.abaza.toLowerCase().includes(query)||w.rus.toLowerCase().includes(query));
+if(results.length===0){
+container.innerHTML='<div class="no-result">Ничего не найдено</div>';
+document.getElementById('wordCount').textContent=results.length;
+document.getElementById('wordCountBadge').textContent=results.length;
+return;
+}
+const section=document.createElement('div');
+section.className='letter-section';
+const title=document.createElement('div');
+title.className='letter-title';
+title.textContent='Результаты поиска';
+section.appendChild(title);
+results.forEach(entry=>{
+const div=document.createElement('div');
+div.className='entry';
+const ab=document.createElement('span');
+ab.className='entry-abaza';
+ab.textContent=entry.abaza;
+const ru=document.createElement('span');
+ru.className='entry-rus';
+ru.textContent=entry.rus;
+div.appendChild(ab);
+div.appendChild(ru);
+section.appendChild(div);
+});
+container.appendChild(section);
+document.getElementById('wordCount').textContent=results.length;
+document.getElementById('wordCountBadge').textContent=results.length;
+}
 
-        function performSearch(query) {
-            const container = document.getElementById('dictionaryContainer');
-            container.innerHTML = '';
-            const results = filteredData.filter(w =>
-                w.abaza.toLowerCase().includes(query) ||
-                w.rus.toLowerCase().includes(query)
-            );
-            if (results.length === 0) {
-                container.innerHTML = '<div class="no-result">Ничего не найдено</div>';
-                document.getElementById('wordCount').textContent = results.length;
-                return;
-            }
-            const section = document.createElement('div');
-            section.className = 'letter-section';
-            const title = document.createElement('div');
-            title.className = 'letter-title';
-            title.textContent = 'Результаты поиска';
-            section.appendChild(title);
-            results.forEach(entry => {
-                const div = document.createElement('div');
-                div.className = 'entry';
-                const ab = document.createElement('span');
-                ab.className = 'entry-abaza';
-                ab.textContent = entry.abaza;
-                const ru = document.createElement('span');
-                ru.className = 'entry-rus';
-                ru.textContent = entry.rus;
-                div.appendChild(ab);
-                div.appendChild(ru);
-                section.appendChild(div);
-            });
-            container.appendChild(section);
-            document.getElementById('wordCount').textContent = results.length;
-        }
+function searchWord(){
+const query=document.getElementById('searchInput').value.trim().toLowerCase();
+if(query) performSearch(query);
+else filterByLetter();
+}
 
-        function searchWord() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (query) performSearch(query);
-            else filterByLetter();
-        }
+function updateCounts(){
+document.getElementById('wordCount').textContent=dictionary.length;
+document.getElementById('wordCountBadge').textContent=dictionary.length;
+}
 
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const val = e.target.value.trim();
-            if (val === '') { filteredData = [...dictionary];
-                filterByLetter(); }
-        });
+document.getElementById('searchInput').addEventListener('input',function(e){
+const val=e.target.value.trim();
+if(val===''){filteredData=[...dictionary]; filterByLetter();}
+});
+document.getElementById('searchInput').addEventListener('keyup',function(e){
+if(e.key==='Enter') searchWord();
+});
 
-        document.getElementById('searchInput').addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') searchWord();
-        });
+function renderAlphabet(){
+const grid=document.getElementById('alphabetGrid');
+grid.innerHTML='';
+alphabet.forEach(item=>{
+const div=document.createElement('div');
+div.className='alphabet-item';
+const letterSpan=document.createElement('span');
+letterSpan.className='letter';
+letterSpan.textContent=item.letter;
+const soundSpan=document.createElement('span');
+soundSpan.className='sound';
+soundSpan.textContent='['+item.sound+']';
+const rusSpan=document.createElement('span');
+rusSpan.className='rus-letter';
+rusSpan.textContent='— '+item.rus;
+div.appendChild(letterSpan);
+div.appendChild(soundSpan);
+div.appendChild(rusSpan);
+grid.appendChild(div);
+});
+}
 
-        const alphabet = [
-            { letter: "А а", sound: "а", rus: "а" },
-            { letter: "Б б", sound: "б", rus: "б" },
-            { letter: "В в", sound: "в", rus: "в" },
-            { letter: "Г г", sound: "г", rus: "г" },
-            { letter: "Гв гв", sound: "гв", rus: "гв" },
-            { letter: "Гъ гъ", sound: "гъ", rus: "гъ" },
-            { letter: "Гъв гъв", sound: "гъв", rus: "гъв" },
-            { letter: "Гь гь", sound: "гь", rus: "гь" },
-            { letter: "ГӀ гӀ", sound: "гӀ", rus: "гl" },
-            { letter: "Д д", sound: "д", rus: "д" },
-            { letter: "Дж дж", sound: "дж", rus: "дж" },
-            { letter: "Дз дз", sound: "дз", rus: "дз" },
-            { letter: "Е е", sound: "е", rus: "е" },
-            { letter: "Ё ё", sound: "ё", rus: "ё" },
-            { letter: "Ж ж", sound: "ж", rus: "ж" },
-            { letter: "Жв жв", sound: "жв", rus: "жв" },
-            { letter: "Жь жь", sound: "жь", rus: "жь" },
-            { letter: "З з", sound: "з", rus: "з" },
-            { letter: "И и", sound: "и", rus: "и" },
-            { letter: "Й й", sound: "й", rus: "й" },
-            { letter: "К к", sound: "к", rus: "к" },
-            { letter: "Кв кв", sound: "кв", rus: "кв" },
-            { letter: "Къ къ", sound: "къ", rus: "къ" },
-            { letter: "Къв къв", sound: "къв", rus: "къв" },
-            { letter: "Кь кь", sound: "кь", rus: "кь" },
-            { letter: "КӀ кӀ", sound: "кl", rus: "кl" },
-            { letter: "КӀв кӀв", sound: "кlв", rus: "кlв" },
-            { letter: "Л л", sound: "л", rus: "л" },
-            { letter: "Ль ль", sound: "ль", rus: "ль" },
-            { letter: "М м", sound: "м", rus: "м" },
-            { letter: "Н н", sound: "н", rus: "н" },
-            { letter: "О о", sound: "о", rus: "о" },
-            { letter: "П п", sound: "п", rus: "п" },
-            { letter: "ПӀ пӀ", sound: "пl", rus: "пl" },
-            { letter: "Р р", sound: "р", rus: "р" },
-            { letter: "С с", sound: "с", rus: "с" },
-            { letter: "Т т", sound: "т", rus: "т" },
-            { letter: "Тл тл", sound: "тл", rus: "тл" },
-            { letter: "Тш тш", sound: "тш", rus: "тш" },
-            { letter: "ТӀ тӀ", sound: "тl", rus: "тl" },
-            { letter: "У у", sound: "у", rus: "у" },
-            { letter: "Ф ф", sound: "ф", rus: "ф" },
-            { letter: "Х х", sound: "х", rus: "х" },
-            { letter: "Хв хв", sound: "хв", rus: "хв" },
-            { letter: "Хъ хъ", sound: "хъ", rus: "хъ" },
-            { letter: "Хъв хъв", sound: "хъв", rus: "хъв" },
-            { letter: "Хь хь", sound: "хь", rus: "хь" },
-            { letter: "ХӀ хӀ", sound: "хl", rus: "хl" },
-            { letter: "Ц ц", sound: "ц", rus: "ц" },
-            { letter: "ЦӀ цӀ", sound: "цl", rus: "цl" },
-            { letter: "Ч ч", sound: "ч", rus: "ч" },
-            { letter: "Чв чв", sound: "чв", rus: "чв" },
-            { letter: "ЧӀ чӀ", sound: "чl", rus: "чl" },
-            { letter: "Ш ш", sound: "ш", rus: "ш" },
-            { letter: "Шв шв", sound: "шв", rus: "шв" },
-            { letter: "Щ щ", sound: "щ", rus: "щ" },
-            { letter: "Ъ ъ", sound: "ъ", rus: "ъ" },
-            { letter: "Ы ы", sound: "ы", rus: "ы" },
-            { letter: "Ь ь", sound: "ь", rus: "ь" },
-            { letter: "Э э", sound: "э", rus: "э" },
-            { letter: "Ю ю", sound: "ю", rus: "ю" },
-            { letter: "Я я", sound: "я", rus: "я" },
-        ];
+// ======== THEME ======== //
+function setTheme(theme){
+document.body.classList.toggle('dark', theme==='dark');
+document.getElementById('themeLight').classList.toggle('active', theme==='light');
+document.getElementById('themeDark').classList.toggle('active', theme==='dark');
+localStorage.setItem('theme', theme);
+}
+const savedTheme = localStorage.getItem('theme') || 'light';
+setTheme(savedTheme);
 
-        function renderAlphabet() {
-            const grid = document.getElementById('alphabetGrid');
-            grid.innerHTML = '';
-            alphabet.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'alphabet-item';
-                const letterSpan = document.createElement('span');
-                letterSpan.className = 'letter';
-                letterSpan.textContent = item.letter;
-                const soundSpan = document.createElement('span');
-                soundSpan.className = 'sound';
-                soundSpan.textContent = '[' + item.sound + ']';
-                const rusSpan = document.createElement('span');
-                rusSpan.className = 'rus-letter';
-                rusSpan.textContent = '— ' + item.rus;
-                div.appendChild(letterSpan);
-                div.appendChild(soundSpan);
-                div.appendChild(rusSpan);
-                grid.appendChild(div);
-            });
-        }
+// ======== INIT ======== //
+filteredData=[...dictionary];
+renderLetterNav();
+filterByLetter();
+renderAlphabet();
+updateCounts();
 
-        filteredData = [...dictionary];
-        renderLetterNav();
-        filterByLetter();
-        renderAlphabet();
-
-        // Регистрация Service Worker (для работы офлайн)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('SW зарегистрирован'))
-                .catch(() => console.log('SW не зарегистрирован'));
-        }
-    </script>
+// ======== SERVICE WORKER ======== //
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js')
+.then(()=>console.log('SW зарегистрирован'))
+.catch(()=>console.log('SW не зарегистрирован'));
+}
+</script>
 </body>
 </html>
 ```
